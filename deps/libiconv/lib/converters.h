@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1999-2002, 2004-2010 Free Software Foundation, Inc.
+ * Copyright (C) 1999-2002, 2004-2006 Free Software Foundation, Inc.
  * This file is part of the GNU LIBICONV Library.
  *
  * The GNU LIBICONV Library is free software; you can redistribute it
@@ -51,16 +51,10 @@ struct mbtowc_funcs {
    */
 };
 
-/* Return code if invalid input after a shift sequence of n bytes was read.
-   (xxx_mbtowc) */
-#define RET_SHIFT_ILSEQ(n)  (-1-2*(n))
 /* Return code if invalid. (xxx_mbtowc) */
-#define RET_ILSEQ           RET_SHIFT_ILSEQ(0)
+#define RET_ILSEQ      -1
 /* Return code if only a shift sequence of n bytes was read. (xxx_mbtowc) */
-#define RET_TOOFEW(n)       (-2-2*(n))
-/* Retrieve the n from the encoded RET_... value. */
-#define DECODE_SHIFT_ILSEQ(r)  ((unsigned int)(RET_SHIFT_ILSEQ(0) - (r)) / 2)
-#define DECODE_TOOFEW(r)       ((unsigned int)(RET_TOOFEW(0) - (r)) / 2)
+#define RET_TOOFEW(n)  (-2-(n))
 
 /*
  * Data type for conversion unicode -> multibyte
@@ -170,7 +164,6 @@ struct conv_struct {
 #include "cp850.h"
 #include "cp862.h"
 #include "cp866.h"
-#include "cp1131.h"
 #include "mac_roman.h"
 #include "mac_centraleurope.h"
 #include "mac_iceland.h"
@@ -190,7 +183,6 @@ struct conv_struct {
 #include "georgian_ps.h"
 #include "koi8_t.h"
 #include "pt154.h"
-#include "rk1048.h"
 #include "mulelao.h"
 #include "cp1133.h"
 #include "tis620.h"
@@ -243,7 +235,6 @@ typedef struct {
 #include "big5hkscs1999.h"
 #include "big5hkscs2001.h"
 #include "big5hkscs2004.h"
-#include "big5hkscs2008.h"
 
 #include "euc_kr.h"
 #include "cp949.h"

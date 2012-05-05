@@ -27,6 +27,7 @@ new Iconv('utf8',    'utf16');
 new Iconv('utf16',   'utf32');
 new Iconv('utf16le', 'utf16be');
 new Iconv('utf32le', 'utf32be');
+new Iconv('utf8mac', 'utf8');
 
 iconv = new Iconv('utf-8', 'iso-8859-1');
 assert.equal(iconv.convert(), undefined);
