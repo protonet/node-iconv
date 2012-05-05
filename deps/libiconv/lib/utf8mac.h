@@ -27,8 +27,16 @@
  	Includes Unicode 3.2 decomposition code derived from Core Foundation
  */
 
+#ifdef __APPLE__
 #include <libkern/OSByteOrder.h>
+#define bswap_16(x) OSSwapInt16(x)
+#else
+#include <byteswap.h>
+#define __LITTLE_ENDIAN__
+#endif
+
 #include <errno.h>
+#include <string.h>			/* bzero() */
 
 #define	UTF_REVERSE_ENDIAN	0x01	/* reverse UCS-2 byte order */
 #define	UTF_NO_NULL_TERM	0x02	/* do not add null termination */
@@ -1147,7 +1155,7 @@ utf8_encodestr(const u_int16_t * ucsp, size_t ucslen, u_int8_t * utf8p,
 			--extra;
 			ucs_ch = *chp++;
 		} else {
-                       ucs_ch = swapbytes ? OSSwapInt16(*ucsp++) : *ucsp++;
+                       ucs_ch = swapbytes ? bswap_16(*ucsp++) : *ucsp++;
 
 			if (decompose && unicode_decomposeable(ucs_ch)) {
 				extra = unicode_decompose(ucs_ch, sequence) - 1;
@@ -1179,7 +1187,7 @@ utf8_encodestr(const u_int16_t * ucsp, size_t ucslen, u_int8_t * utf8p,
 				u_int16_t ch2;
 				u_int32_t pair;
 
-                               ch2 = swapbytes ? OSSwapInt16(*ucsp) : *ucsp;
+                               ch2 = swapbytes ? bswap_16(*ucsp) : *ucsp;
 				if (ch2 >= SP_LOW_FIRST && ch2 <= SP_LOW_LAST) {
 					pair = ((ucs_ch - SP_HIGH_FIRST) << SP_HALF_SHIFT)
 						+ (ch2 - SP_LOW_FIRST) + SP_HALF_BASE;
@@ -1320,13 +1328,13 @@ utf8_decodestr(const u_int8_t* utf8p, size_t utf8len, u_int16_t* ucsp,
 				ucs_ch = (ch >> SP_HALF_SHIFT) + SP_HIGH_FIRST;
 				if (ucs_ch < SP_HIGH_FIRST || ucs_ch > SP_HIGH_LAST)
 					goto invalid;
-                               *ucsp++ = swapbytes ? OSSwapInt16(ucs_ch) : ucs_ch;
+                               *ucsp++ = swapbytes ? bswap_16(ucs_ch) : ucs_ch;
 				if (ucsp >= bufend)
 					goto toolong;
 				ucs_ch = (ch & SP_HALF_MASK) + SP_LOW_FIRST;
 				if (ucs_ch < SP_LOW_FIRST || ucs_ch > SP_LOW_LAST)
 					goto invalid;
-                               *ucsp++ = swapbytes ? OSSwapInt16(ucs_ch) : ucs_ch;
+                               *ucsp++ = swapbytes ? bswap_16(ucs_ch) : ucs_ch;
 			        continue;
 			default:
 				goto invalid;
@@ -1336,7 +1344,7 @@ utf8_decodestr(const u_int8_t* utf8p, size_t utf8len, u_int16_t* ucsp,
 		u_int16_t composite, base;
 
 		if (unicode_combinable(ucs_ch)) {
-                       base = swapbytes ? OSSwapInt16(*(ucsp - 1)) : *(ucsp - 1);
+                       base = swapbytes ? bswap_16(*(ucsp - 1)) : *(ucsp - 1);
 			composite = unicode_combine(base, ucs_ch);
 			if (composite) {
 				--ucsp;
@@ -1348,7 +1356,7 @@ utf8_decodestr(const u_int8_t* utf8p, size_t utf8len, u_int16_t* ucsp,
 			goto exit;
 		}
 	}
-       *ucsp++ = swapbytes ? OSSwapInt16(ucs_ch) : ucs_ch;
+       *ucsp++ = swapbytes ? bswap_16(ucs_ch) : ucs_ch;
 	utf8lastpass = utf8p;
 	}
 

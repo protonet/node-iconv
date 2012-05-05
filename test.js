@@ -27,7 +27,13 @@ new Iconv('utf8',    'utf16');
 new Iconv('utf16',   'utf32');
 new Iconv('utf16le', 'utf16be');
 new Iconv('utf32le', 'utf32be');
-new Iconv('utf8mac', 'utf8');
+new Iconv('utf8-mac', 'utf8');
+
+buffer = new Buffer(2);
+buffer[0] = 195;
+buffer[1] = 188;
+iconv = new Iconv('utf8-mac', 'utf8');
+assert.bufferEqual(iconv.convert(buffer), new Buffer('ü'));
 
 iconv = new Iconv('utf-8', 'iso-8859-1');
 assert.equal(iconv.convert(), undefined);
